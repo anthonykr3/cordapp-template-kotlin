@@ -1,14 +1,9 @@
-package com.template
+package com.invoicefinance
 
 import co.paralleluniverse.fibers.Suspendable
-import net.corda.core.contracts.CommandData
-import net.corda.core.contracts.Contract
-import net.corda.core.contracts.ContractState
 import net.corda.core.flows.*
-import net.corda.core.identity.AbstractParty
 import net.corda.core.messaging.CordaRPCOps
 import net.corda.core.serialization.SerializationWhitelist
-import net.corda.core.transactions.LedgerTransaction
 import net.corda.webserver.services.WebServerPluginRegistry
 import java.util.function.Function
 import javax.ws.rs.GET
@@ -20,9 +15,9 @@ import javax.ws.rs.core.Response
 // *****************
 // * API Endpoints *
 // *****************
-@Path("template")
+@Path("invoicefinance")
 class TemplateApi(val rpcOps: CordaRPCOps) {
-    // Accessible at /api/template/templateGetEndpoint.
+    // Accessible at /api/invoicefinance/templateGetEndpoint.
     @GET
     @Path("templateGetEndpoint")
     @Produces(MediaType.APPLICATION_JSON)
@@ -58,10 +53,10 @@ class TemplateWebPlugin : WebServerPluginRegistry {
     // A list of classes that expose web JAX-RS REST APIs.
     override val webApis: List<Function<CordaRPCOps, out Any>> = listOf(Function(::TemplateApi))
     //A list of directories in the resources directory that will be served by Jetty under /web.
-    // This template's web frontend is accessible at /web/template.
+    // This invoicefinance's web frontend is accessible at /web/invoicefinance.
     override val staticServeDirs: Map<String, String> = mapOf(
-            // This will serve the templateWeb directory in resources to /web/template
-            "template" to javaClass.classLoader.getResource("templateWeb").toExternalForm()
+            // This will serve the templateWeb directory in resources to /web/invoicefinance
+            "invoicefinance" to javaClass.classLoader.getResource("templateWeb").toExternalForm()
     )
 }
 
@@ -73,3 +68,4 @@ class TemplateSerializationWhitelist : SerializationWhitelist {
 // This class is not annotated with @CordaSerializable, so it must be added to the serialization whitelist, above, if
 // we want to send it to other nodes within a flow.
 data class TemplateData(val payload: String)
+

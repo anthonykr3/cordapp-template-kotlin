@@ -1,4 +1,4 @@
-package com.template
+package com.invoicefinance
 
 import net.corda.testing.setCordappPackages
 import net.corda.testing.unsetCordappPackages
@@ -10,7 +10,7 @@ class ContractTests {
 
     @Before
     fun setup() {
-        setCordappPackages("com.template")
+        setCordappPackages("com.invoicefinance")
     }
 
     @After
@@ -21,3 +21,4 @@ class ContractTests {
     @Test
     fun `dummy test`() = Unit
 }
+

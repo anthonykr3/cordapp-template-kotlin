@@ -1,4 +1,4 @@
-package com.template
+package com.invoicefinance
 
 import net.corda.core.contracts.CommandData
 import net.corda.core.contracts.Contract
@@ -10,7 +10,7 @@ import net.corda.core.transactions.LedgerTransaction
 // * Contract Code *
 // *****************
 // This is used to identify our contract when building a transaction
-val TEMPLATE_CONTRACT_ID = "com.template.TemplateContract"
+val TEMPLATE_CONTRACT_ID = "com.invoicefinance.TemplateContract"
 
 open class TemplateContract : Contract {
     // A transaction is considered valid if the verify() function of the contract of each of the transaction's input

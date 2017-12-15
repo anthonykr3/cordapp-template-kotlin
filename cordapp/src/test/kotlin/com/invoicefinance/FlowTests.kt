@@ -1,4 +1,4 @@
-package com.template
+package com.invoicefinance
 
 import net.corda.node.internal.StartedNode
 import net.corda.testing.node.MockNetwork
@@ -16,7 +16,7 @@ class FlowTests {
 
     @Before
     fun setup() {
-        setCordappPackages("com.template")
+        setCordappPackages("com.invoicefinance")
         network = MockNetwork()
         val nodes = network.createSomeNodes(2)
         a = nodes.partyNodes[0]
