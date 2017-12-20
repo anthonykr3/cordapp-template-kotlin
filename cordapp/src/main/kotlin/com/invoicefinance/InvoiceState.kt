@@ -11,20 +11,21 @@ import java.util.*
 
 data class InvoiceState(
         val issuance: PartyAndReference,
-        override val owner: AbstractParty,
+        val owner: AbstractParty,
         var debtor: AbstractParty,
         var invoiceAmount: Amount<Issued<Currency>>,
         val dueOn: Instant,
-        val verifiedForPayment: Boolean) : OwnableState, QueryableState {
+        val verifiedForPayment: Boolean,
+        override val linearId: UniqueIdentifier) : LinearState, QueryableState {
     override fun supportedSchemas(): Iterable<MappedSchema> = listOf(InvoiceSchemaV1)
 
     companion object {
         const val INVOICE_CONTRACT_PROGRAM_ID: ContractClassName = "com.invoicefinance.InvoiceContract"
     }
 
-    override fun withNewOwner(newOwner: AbstractParty): CommandAndState = CommandAndState(InvoiceContract.Commands.Move(), this.copy(owner = newOwner))
+    //fun withNewOwner(newOwner: AbstractParty): CommandAndState = CommandAndState(InvoiceContract.Commands.Move(), this.copy(owner = newOwner))
 
-    override val participants get() = listOf(owner, debtor)
+    override val participants get() = setOf(owner, debtor, issuance.party).toList()
 
     override fun generateMappedObject(schema: MappedSchema): PersistentState {
         return when (schema) {

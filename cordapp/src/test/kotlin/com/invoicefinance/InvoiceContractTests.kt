@@ -1,5 +1,6 @@
 package com.invoicefinance
 
+import net.corda.core.contracts.UniqueIdentifier
 import net.corda.core.utilities.days
 import net.corda.finance.DOLLARS
 import net.corda.finance.`issued by`
@@ -13,7 +14,8 @@ class InvoiceContractTests {
             debtor = MEGA_CORP,
             invoiceAmount = 1234.DOLLARS `issued by` MINI_CORP.ref(123),
             dueOn = TEST_TX_TIME + 30.days,
-            verifiedForPayment = false
+            verifiedForPayment = false,
+            linearId = UniqueIdentifier()
     )
 
     @Test

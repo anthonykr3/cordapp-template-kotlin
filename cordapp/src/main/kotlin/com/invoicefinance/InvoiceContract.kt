@@ -37,7 +37,16 @@ class InvoiceContract : Contract {
             }
 
             is Commands.Verify -> {
+                requireThat {
+                    "There must only be one input" using (tx.outputStates.size == 1)
+                    var invoices = tx.outputsOfType<InvoiceState>()
+                    "The input must be of type InvoiceState" using (invoices.size == 1)
 
+                    var invoice = invoices.single()
+                    "The invoice must be verified" using (invoice.verifiedForPayment)
+
+                    "The debtor must sign the command" using (command.signers.contains(invoice.debtor.owningKey))
+                }
             }
 
             else -> throw IllegalArgumentException("Unrecognised Command")
@@ -45,9 +54,9 @@ class InvoiceContract : Contract {
     }
 
     interface Commands : CommandData {
-        class Create() : TypeOnlyCommandData(), Commands
-        class Move() : TypeOnlyCommandData(), Commands
-        class Verify() : TypeOnlyCommandData(), Commands
+        class Create : TypeOnlyCommandData(), Commands
+        class Move : TypeOnlyCommandData(), Commands
+        class Verify : TypeOnlyCommandData(), Commands
     }
 }
 

@@ -1,0 +1,5 @@
+start GenerateInvoiceFlow reference: "1234", invoiceAmount: 100, dueOn: "2018-03-01T00:00:00.000Z", debtorIdentity: "O=PartyB,L=New York,C=US"
+
+start VerifyInvoiceFlow reference: "1234"
+
+corda-finance-2.0.0, kotlin-source-0.1, corda-core-2.0.0
