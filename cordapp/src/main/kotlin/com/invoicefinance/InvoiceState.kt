@@ -12,8 +12,8 @@ import java.util.*
 data class InvoiceState(
         val issuance: PartyAndReference,
         val owner: AbstractParty,
-        var debtor: AbstractParty,
-        var invoiceAmount: Amount<Issued<Currency>>,
+        val debtor: AbstractParty,
+        val invoiceAmount: Amount<Issued<Currency>>,
         val dueOn: Instant,
         val verifiedForPayment: Boolean,
         override val linearId: UniqueIdentifier) : LinearState, QueryableState {

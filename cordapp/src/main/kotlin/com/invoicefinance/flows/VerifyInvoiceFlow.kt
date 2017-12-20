@@ -34,6 +34,7 @@ class VerifyInvoiceFlow(val reference: String) : FlowLogic<Unit>() {
     @Suspendable
     override fun call() {
         logger.info("Started verifying")
+        progressTracker.currentStep = STARTING_TRANSACTION
         val notary = serviceHub.networkMapCache.notaryIdentities[0]
         val inputState = serviceHub.vaultService.queryBy(InvoiceState::class.java).states.first { it.state.data.issuance.reference.bytes.contentEquals(reference.toByteArray()) }
 
