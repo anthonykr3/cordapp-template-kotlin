@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Invoice Finance CordApp</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
+          integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.20.1/moment.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+            integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+            crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.0-rc.1/angular.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/2.2.0/ui-bootstrap-tpls.min.js"></script>
+    <script src="js/angular-module.js"></script>
+</head>
+
+<body ng-app="invoiceAppModule" ng-controller="DemoAppController as demoApp">
+
+<nav class="navbar navbar-default">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="#">{{demoApp.thisNode}}</a>
+        </div>
+        <button ng-click="demoApp.openModal()" type="button" class="btn btn-primary navbar-btn">Issue Invoice</button>
+    </div>
+</nav>
+
+<script type="text/ng-template" id="addInvoiceModal.html">
+    <div class="modal-header">
+        <h4 class="modal-title">Add new Invoice</h4>
+    </div>
+    <form>
+        <div class="modal-body">
+            <div class="form-group">
+                <label for="reference" class="control-label">Reference:</label>
+                <input type="text" ng-model="modalInstance.form.reference" class="form-control" id="reference">
+            </div>
+            <div class="form-group">
+                <label for="invoiceAmount" class="control-label">Invoice Amount (Int):</label>
+                <input type="text" ng-model="modalInstance.form.invoiceAmount" class="form-control" id="invoiceAmount">
+            </div>
+            <div class="form-group">
+                <label for="dueOn" class="control-label">Due On:</label>
+                <input type="text" ng-model="modalInstance.form.dueOn" class="form-control" id="dueOn">
+            </div>
+            <div class="form-group">
+                <label for="debtorIdentity" class="control-label">Counter-party:</label>
+                <select ng-model="modalInstance.form.debtorIdentity" class="form-control" id="debtorIdentity"
+                        ng-options="peer as peer for peer in modalInstance.peers">
+                </select>
+            </div>
+            <div ng-show="modalInstance.formError" class="form-group">
+                <div class="alert alert-danger" role="alert">
+                    <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                    <span class="sr-only">Error:</span>
+                    Enter valid Invoice parameters
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button ng-click="modalInstance.cancel()" type="button" class="btn btn-default">Close</button>
+            <button ng-click="modalInstance.create()" type="button" class="btn btn-primary">Issue Invoice</button>
+        </div>
+    </form>
+</script>
+
+<script type="text/ng-template" id="messageContent.html">
+    <div class="modal-body" id="modal-body">
+        {{ modalInstanceTwo.message }}
+    </div>
+</script>
+
+<div class="row">
+    <div class="col-md-1"></div>
+    <div class="col-md-10">
+        <div ng-show="!demoApp.invoices.length" class="panel panel-primary">
+            <div class="panel-heading">
+                <h3 class="panel-title">There are no outstanding Invoices</h3>
+            </div>
+            <div class="panel-body">Use the "Create Invoice" button to send an Invoice to a peer.</div>
+        </div>
+        <div ng-show="demoApp.invoices.length" class="panel panel-primary">
+            <div class="panel-heading">
+                <h3 class="panel-title">Outstanding Invoices</h3>
+            </div>
+        </div>
+        <div ng-repeat="invoice in demoApp.invoices" class="panel panel-default">
+            <div class="panel-body">
+                <ul>
+                    <li>Reference: {{invoice.issuance.reference}}</li>
+                    <li>Issuer: {{invoice.issuance.party}}</li>
+                    <li>Debtor: {{invoice.debtor}}</li>
+                    <li>Owner: {{invoice.owner}}</li>
+                    <li>Amount: {{invoice.invoiceAmount}}</li>
+                    <li>DueOn: {{invoice.dueOn * 1000 | date : 'dd-MM-yyyy'}}</li>
+                    <li>Verified by debtor:
+                        <span class="glyphicon glyphicon-ok" style="color:green" ng-if="invoice.verifiedForPayment"></span>
+                        <span class="glyphicon glyphicon-cancel" style="color:red" ng-if="!invoice.verifiedForPayment"></span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-1"></div>
+</div>
+</body>
+</html>

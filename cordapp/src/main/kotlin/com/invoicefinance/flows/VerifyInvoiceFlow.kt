@@ -6,12 +6,13 @@ import com.invoicefinance.InvoiceState
 import net.corda.core.contracts.Command
 import net.corda.core.contracts.StateAndContract
 import net.corda.core.flows.*
+import net.corda.core.transactions.SignedTransaction
 import net.corda.core.transactions.TransactionBuilder
 import net.corda.core.utilities.ProgressTracker
 
 @InitiatingFlow
 @StartableByRPC
-class VerifyInvoiceFlow(val reference: String) : FlowLogic<Unit>() {
+class VerifyInvoiceFlow(val reference: String) : FlowLogic<SignedTransaction>() {
     companion object {
         object STARTING_TRANSACTION : ProgressTracker.Step("Starting")
         object GATHERING_SIGS : ProgressTracker.Step("Gathering the counterparty's signature.") {
@@ -32,7 +33,7 @@ class VerifyInvoiceFlow(val reference: String) : FlowLogic<Unit>() {
     override val progressTracker = tracker()
 
     @Suspendable
-    override fun call() {
+    override fun call(): SignedTransaction {
         logger.info("Started verifying")
         progressTracker.currentStep = STARTING_TRANSACTION
         val notary = serviceHub.networkMapCache.notaryIdentities[0]
@@ -54,6 +55,6 @@ class VerifyInvoiceFlow(val reference: String) : FlowLogic<Unit>() {
         val otherFlows = partiesToSign.map { initiateFlow(it) }
 
         val fullySignedTx = subFlow(CollectSignaturesFlow(signedTx, otherFlows, GATHERING_SIGS.childProgressTracker()))
-        subFlow(FinalityFlow(fullySignedTx, FINALISING_TRANSACTION.childProgressTracker()))
+        return subFlow(FinalityFlow(fullySignedTx, FINALISING_TRANSACTION.childProgressTracker()))
     }
 }

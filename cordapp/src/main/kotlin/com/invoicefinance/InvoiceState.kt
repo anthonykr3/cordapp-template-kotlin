@@ -23,8 +23,6 @@ data class InvoiceState(
         const val INVOICE_CONTRACT_PROGRAM_ID: ContractClassName = "com.invoicefinance.InvoiceContract"
     }
 
-    //fun withNewOwner(newOwner: AbstractParty): CommandAndState = CommandAndState(InvoiceContract.Commands.Move(), this.copy(owner = newOwner))
-
     override val participants get() = setOf(owner, debtor, issuance.party).toList()
 
     override fun generateMappedObject(schema: MappedSchema): PersistentState {

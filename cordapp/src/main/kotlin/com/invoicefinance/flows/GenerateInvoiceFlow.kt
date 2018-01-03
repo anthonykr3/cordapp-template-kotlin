@@ -20,7 +20,7 @@ import java.time.Instant
 
 @InitiatingFlow
 @StartableByRPC
-class GenerateInvoiceFlow(val reference: String, val invoiceAmount: Int, val dueOn: Instant, val debtorIdentity: String) : FlowLogic<SignedTransaction>() {
+class GenerateInvoiceFlow(val reference: String, val invoiceAmount: Int, val dueOn: Instant, val debtorIdentity: CordaX500Name) : FlowLogic<SignedTransaction>() {
     companion object {
         object STARTING_TRANSACTION : ProgressTracker.Step("Starting")
         object GATHERING_SIGS : ProgressTracker.Step("Gathering the counterparty's signature.") {
@@ -45,8 +45,7 @@ class GenerateInvoiceFlow(val reference: String, val invoiceAmount: Int, val due
         progressTracker.currentStep = STARTING_TRANSACTION
         val notary = serviceHub.networkMapCache.notaryIdentities[0]
 
-        val debtorName = CordaX500Name.parse(debtorIdentity)
-        val debtor = serviceHub.networkMapCache.getPeerByLegalName(debtorName) ?: throw IllegalArgumentException("Invalid name")
+        val debtor = serviceHub.networkMapCache.getPeerByLegalName(debtorIdentity) ?: throw IllegalArgumentException("Invalid name")
 
         val outputState = InvoiceState(PartyAndReference(ourIdentity, OpaqueBytes(reference.toByteArray())), ourIdentity, debtor, invoiceAmount.DOLLARS.CASH.amount, dueOn, false, UniqueIdentifier())
         val outputStateAndContract = StateAndContract(outputState, InvoiceState.INVOICE_CONTRACT_PROGRAM_ID)

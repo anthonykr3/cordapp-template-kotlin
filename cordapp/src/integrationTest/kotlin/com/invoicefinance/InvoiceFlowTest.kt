@@ -28,29 +28,26 @@ import java.math.BigInteger
 import java.security.KeyPair
 import java.time.Instant
 import java.util.*
-import kotlin.test.assertTrue
 
 
 class InvoiceFlowTest {
-
     companion object {
         private val SELLER_KEY: KeyPair by lazy { entropyToKeyPair(BigInteger.valueOf(10)) }
         val SELLER: Party get() = Party(CordaX500Name(organisation = "Seller", locality = "Blackpool", country = "GB"), SELLER_KEY.public)
 
-        val DEBTOR_KEY: KeyPair by lazy { entropyToKeyPair(BigInteger.valueOf(20)) }
+        private val DEBTOR_KEY: KeyPair by lazy { entropyToKeyPair(BigInteger.valueOf(20)) }
         val DEBTOR: Party get() = Party(CordaX500Name(organisation = "Debtor", locality = "London", country = "GB"), DEBTOR_KEY.public)
 
-
-        val blankIdentifier = UniqueIdentifier(null, UUID(0, 0))
+        private val blankIdentifier = UniqueIdentifier(null, UUID(0, 0))
         val expectedInitialState = InvoiceState(PartyAndReference(SELLER, OpaqueBytes("1234".toByteArray())), SELLER, DEBTOR, 100.DOLLARS.CASH.amount, Instant.parse("2018-03-01T00:00:00.000Z"), false, blankIdentifier)
-    }
 
-    fun Compare(first: InvoiceState, second: InvoiceState): Boolean {
-        return first.issuance.party.nameOrNull() == second.issuance.party.nameOrNull() &&
-                first.debtor.nameOrNull() == second.debtor.nameOrNull() &&
-                first.owner.nameOrNull() == second.owner.nameOrNull() &&
-                first.invoiceAmount == second.invoiceAmount &&
-                first.verifiedForPayment == second.verifiedForPayment
+        fun areTheSameInvoice(first: InvoiceState, second: InvoiceState): Boolean {
+            return first.issuance.party.nameOrNull() == second.issuance.party.nameOrNull() &&
+                    first.debtor.nameOrNull() == second.debtor.nameOrNull() &&
+                    first.owner.nameOrNull() == second.owner.nameOrNull() &&
+                    first.invoiceAmount == second.invoiceAmount &&
+                    first.verifiedForPayment == second.verifiedForPayment
+        }
     }
 
     @Test
@@ -88,13 +85,13 @@ class InvoiceFlowTest {
                     expect { update: Vault.Update<InvoiceState> ->
                         require(update.consumed.size == 0) { "Should not consume any inputs"}
                         require(update.produced.size == 1) { "Should produce one thingy" }
-                        require(Compare(update.produced.single().state.data, expectedInitialState)) { "Should have the correct state" }
+                        require(Companion.areTheSameInvoice(update.produced.single().state.data, expectedInitialState)) { "Should have the correct state" }
                     },
                     expect { update: Vault.Update<InvoiceState> ->
                         val newState = expectedInitialState.copy(verifiedForPayment = true)
                         require(update.consumed.size == 1) { "Should consume the previous invoice"}
                         require(update.produced.size == 1) { "Should produce one thingy" }
-                        require(Compare(update.produced.single().state.data, newState)) { "Should have the correct state" }
+                        require(Companion.areTheSameInvoice(update.produced.single().state.data, newState)) { "Should have the correct state" }
                     }
             )
 
