@@ -1,11 +1,12 @@
-package com.invoicefinance
+package com.invoicefinance.contracts
 
+import com.invoicefinance.states.InvoiceState
 import net.corda.core.contracts.*
 import net.corda.core.transactions.LedgerTransaction
 
 class InvoiceContract : Contract {
     override fun verify(tx: LedgerTransaction) {
-        val command = tx.commands.requireSingleCommand<InvoiceContract.Commands>()
+        val command = tx.commands.requireSingleCommand<Commands>()
         val timeWindow = tx.timeWindow
 
         when (command.value) {

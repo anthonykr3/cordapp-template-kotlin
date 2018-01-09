@@ -90,15 +90,15 @@
         <div ng-repeat="invoice in demoApp.invoices" class="panel panel-default">
             <div class="panel-body">
                 <ul>
-                    <li>Reference: {{invoice.issuance.reference}}</li>
-                    <li>Issuer: {{invoice.issuance.party}}</li>
+                    <li>Reference: {{invoice.reference}}</li>
+                    <li>Issuer: {{invoice.issuer}}</li>
                     <li>Debtor: {{invoice.debtor}}</li>
                     <li>Owner: {{invoice.owner}}</li>
                     <li>Amount: {{invoice.invoiceAmount}}</li>
                     <li>DueOn: {{invoice.dueOn * 1000 | date : 'dd-MM-yyyy'}}</li>
                     <li>Verified by debtor:
-                        <span class="glyphicon glyphicon-ok" style="color:green" ng-if="invoice.verifiedForPayment"></span>
-                        <span class="glyphicon glyphicon-cancel" style="color:red" ng-if="!invoice.verifiedForPayment"></span>
+                        <span class="glyphicon glyphicon-ok" style="color:green" ng-if="invoice.verifiedForPayment === true"></span>
+                        <span class="glyphicon glyphicon-cancel" style="color:red" ng-if="invoice.verifiedForPayment === false"></span>
                     </li>
                 </ul>
             </div>

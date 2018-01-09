@@ -1,8 +1,8 @@
 package com.invoicefinance.flows
 
 import co.paralleluniverse.fibers.Suspendable
-import com.invoicefinance.InvoiceContract
-import com.invoicefinance.InvoiceState
+import com.invoicefinance.contracts.InvoiceContract
+import com.invoicefinance.states.InvoiceState
 import net.corda.core.contracts.Command
 import net.corda.core.contracts.PartyAndReference
 import net.corda.core.contracts.StateAndContract
@@ -15,12 +15,11 @@ import net.corda.core.utilities.OpaqueBytes
 import net.corda.core.utilities.ProgressTracker
 import net.corda.core.utilities.seconds
 import net.corda.finance.DOLLARS
-import net.corda.finance.contracts.asset.CASH
 import java.time.Instant
 
 @InitiatingFlow
 @StartableByRPC
-class GenerateInvoiceFlow(val reference: String, val invoiceAmount: Int, val dueOn: Instant, val debtorIdentity: CordaX500Name) : FlowLogic<SignedTransaction>() {
+class GenerateInvoiceFlow(private val reference: String, private val invoiceAmount: Int, private val dueOn: Instant, private val debtorIdentity: CordaX500Name) : FlowLogic<SignedTransaction>() {
     companion object {
         object STARTING_TRANSACTION : ProgressTracker.Step("Starting")
         object GATHERING_SIGS : ProgressTracker.Step("Gathering the counterparty's signature.") {
@@ -47,7 +46,7 @@ class GenerateInvoiceFlow(val reference: String, val invoiceAmount: Int, val due
 
         val debtor = serviceHub.networkMapCache.getPeerByLegalName(debtorIdentity) ?: throw IllegalArgumentException("Invalid name")
 
-        val outputState = InvoiceState(PartyAndReference(ourIdentity, OpaqueBytes(reference.toByteArray())), ourIdentity, debtor, invoiceAmount.DOLLARS.CASH.amount, dueOn, false, UniqueIdentifier())
+        val outputState = InvoiceState(PartyAndReference(ourIdentity, OpaqueBytes(reference.toByteArray())), ourIdentity, debtor, invoiceAmount.DOLLARS, dueOn, false, UniqueIdentifier())
         val outputStateAndContract = StateAndContract(outputState, InvoiceState.INVOICE_CONTRACT_PROGRAM_ID)
         val cmd = Command(InvoiceContract.Commands.Create(), listOf(ourIdentity.owningKey, debtor.owningKey))
 

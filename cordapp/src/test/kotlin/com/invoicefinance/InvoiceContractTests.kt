@@ -1,9 +1,10 @@
 package com.invoicefinance
 
+import com.invoicefinance.contracts.InvoiceContract
+import com.invoicefinance.states.InvoiceState
 import net.corda.core.contracts.UniqueIdentifier
 import net.corda.core.utilities.days
 import net.corda.finance.DOLLARS
-import net.corda.finance.`issued by`
 import net.corda.testing.*
 import org.junit.Test
 
@@ -12,7 +13,7 @@ class InvoiceContractTests {
             issuance = MINI_CORP.ref(123),
             owner = MINI_CORP,
             debtor = MEGA_CORP,
-            invoiceAmount = 1234.DOLLARS `issued by` MINI_CORP.ref(123),
+            invoiceAmount = 1234.DOLLARS,
             dueOn = TEST_TX_TIME + 30.days,
             verifiedForPayment = false,
             linearId = UniqueIdentifier()
@@ -48,7 +49,7 @@ class InvoiceContractTests {
                     `fails with`("The owner and the debtor cannot be the same entity")
                 }
                 tweak {
-                    var newOutput = output.copy(invoiceAmount = 0.DOLLARS `issued by` MINI_CORP.ref(123))
+                    var newOutput = output.copy(invoiceAmount = 0.DOLLARS)
                     output(InvoiceState.INVOICE_CONTRACT_PROGRAM_ID, "invoice", newOutput)
                     `fails with`("The invoice amount should be greater than zero")
                 }

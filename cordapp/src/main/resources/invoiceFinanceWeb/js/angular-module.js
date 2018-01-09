@@ -32,9 +32,7 @@ app.controller('DemoAppController', function($http, $location, $uibModal) {
     };
 
     demoApp.getInvoices = () => $http.get(apiBaseURL + "invoices")
-        .then((response) => demoApp.invoices = Object.keys(response.data)
-            .map((key) => response.data[key].state.data)
-            .reverse());
+        .then((response) => demoApp.invoices = response.data);
 
     demoApp.getInvoices();
 });
@@ -95,4 +93,4 @@ app.controller('ModalInstanceController', function ($http, $location, $uibModalI
 app.controller('MessageController', function ($uibModalInstance, message) {
     const modalInstanceTwo = this;
     modalInstanceTwo.message = message.data;
-};
+});

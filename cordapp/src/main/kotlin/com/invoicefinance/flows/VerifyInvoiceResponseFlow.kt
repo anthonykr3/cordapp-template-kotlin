@@ -10,8 +10,8 @@ import net.corda.core.flows.SignTransactionFlow
 import net.corda.core.transactions.SignedTransaction
 import net.corda.core.utilities.ProgressTracker
 
-@InitiatedBy(GenerateInvoiceFlow::class)
-class GenerateInvoiceResponseFlow(val otherPartySession: FlowSession) : FlowLogic<SignedTransaction>() {
+@InitiatedBy(VerifyInvoiceFlow::class)
+class VerifyInvoiceResponseFlow(val otherPartySession: FlowSession) : FlowLogic<SignedTransaction>() {
 
     companion object {
         object STARTING_STEP : ProgressTracker.Step("Starting")
@@ -25,6 +25,7 @@ class GenerateInvoiceResponseFlow(val otherPartySession: FlowSession) : FlowLogi
     }
 
     override val progressTracker = tracker()
+
 
     @Suspendable
     override fun call(): SignedTransaction {
@@ -40,4 +41,3 @@ class GenerateInvoiceResponseFlow(val otherPartySession: FlowSession) : FlowLogi
         return subFlow(signTransactionFlow)
     }
 }
-

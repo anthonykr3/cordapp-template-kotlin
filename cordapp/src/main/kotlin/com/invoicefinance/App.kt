@@ -2,16 +2,12 @@ package com.invoicefinance
 
 import co.paralleluniverse.fibers.Suspendable
 import com.invoicefinance.api.InvoiceApi
+import com.invoicefinance.states.InvoiceState
 import net.corda.core.flows.*
 import net.corda.core.messaging.CordaRPCOps
 import net.corda.core.serialization.SerializationWhitelist
 import net.corda.webserver.services.WebServerPluginRegistry
 import java.util.function.Function
-import javax.ws.rs.GET
-import javax.ws.rs.Path
-import javax.ws.rs.Produces
-import javax.ws.rs.core.MediaType
-import javax.ws.rs.core.Response
 
 // *********
 // * Flows *

@@ -1,5 +1,6 @@
-package com.invoicefinance
+package com.invoicefinance.states
 
+import com.invoicefinance.InvoiceSchemaV1
 import net.corda.core.contracts.*
 import net.corda.core.crypto.toStringShort
 import net.corda.core.identity.AbstractParty
@@ -13,14 +14,14 @@ data class InvoiceState(
         val issuance: PartyAndReference,
         val owner: AbstractParty,
         val debtor: AbstractParty,
-        val invoiceAmount: Amount<Issued<Currency>>,
+        val invoiceAmount: Amount<Currency>,
         val dueOn: Instant,
         val verifiedForPayment: Boolean,
         override val linearId: UniqueIdentifier) : LinearState, QueryableState {
     override fun supportedSchemas(): Iterable<MappedSchema> = listOf(InvoiceSchemaV1)
 
     companion object {
-        const val INVOICE_CONTRACT_PROGRAM_ID: ContractClassName = "com.invoicefinance.InvoiceContract"
+        const val INVOICE_CONTRACT_PROGRAM_ID: ContractClassName = "com.invoicefinance.contracts.InvoiceContract"
     }
 
     override val participants get() = setOf(owner, debtor, issuance.party).toList()
@@ -34,7 +35,7 @@ data class InvoiceState(
                     debtorHash = this.owner.owningKey.toStringShort(),
                     dueOn = this.dueOn,
                     invoiceAmount = this.invoiceAmount.quantity,
-                    invoiceAmountCurrency = this.invoiceAmount.token.product.currencyCode,
+                    invoiceAmountCurrency = this.invoiceAmount.token.currencyCode,
                     verifiedForPayment = this.verifiedForPayment
             )
             else -> throw IllegalArgumentException("Unrecognised schema $schema")

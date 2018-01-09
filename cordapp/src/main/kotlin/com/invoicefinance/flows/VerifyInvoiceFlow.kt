@@ -1,8 +1,8 @@
 package com.invoicefinance.flows
 
 import co.paralleluniverse.fibers.Suspendable
-import com.invoicefinance.InvoiceContract
-import com.invoicefinance.InvoiceState
+import com.invoicefinance.contracts.InvoiceContract
+import com.invoicefinance.states.InvoiceState
 import net.corda.core.contracts.Command
 import net.corda.core.contracts.StateAndContract
 import net.corda.core.flows.*

@@ -2,6 +2,7 @@ package com.invoicefinance
 
 import com.invoicefinance.flows.GenerateInvoiceFlow
 import com.invoicefinance.flows.VerifyInvoiceFlow
+import com.invoicefinance.states.InvoiceState
 import net.corda.core.contracts.PartyAndReference
 import net.corda.core.contracts.UniqueIdentifier
 import net.corda.core.crypto.entropyToKeyPair
@@ -13,7 +14,6 @@ import net.corda.core.node.services.Vault
 import net.corda.core.utilities.OpaqueBytes
 import net.corda.core.utilities.getOrThrow
 import net.corda.finance.DOLLARS
-import net.corda.finance.contracts.asset.CASH
 import net.corda.node.services.FlowPermissions.Companion.startFlowPermission
 import net.corda.node.services.transactions.SimpleNotaryService
 import net.corda.nodeapi.User
@@ -29,7 +29,6 @@ import java.security.KeyPair
 import java.time.Instant
 import java.util.*
 
-
 class InvoiceFlowTest {
     companion object {
         private val SELLER_KEY: KeyPair by lazy { entropyToKeyPair(BigInteger.valueOf(10)) }
@@ -39,7 +38,7 @@ class InvoiceFlowTest {
         val DEBTOR: Party get() = Party(CordaX500Name(organisation = "Debtor", locality = "London", country = "GB"), DEBTOR_KEY.public)
 
         private val blankIdentifier = UniqueIdentifier(null, UUID(0, 0))
-        val expectedInitialState = InvoiceState(PartyAndReference(SELLER, OpaqueBytes("1234".toByteArray())), SELLER, DEBTOR, 100.DOLLARS.CASH.amount, Instant.parse("2018-03-01T00:00:00.000Z"), false, blankIdentifier)
+        val expectedInitialState = InvoiceState(PartyAndReference(SELLER, OpaqueBytes("1234".toByteArray())), SELLER, DEBTOR, 100.DOLLARS, Instant.parse("2018-03-01T00:00:00.000Z"), false, blankIdentifier)
 
         fun areTheSameInvoice(first: InvoiceState, second: InvoiceState): Boolean {
             return first.issuance.party.nameOrNull() == second.issuance.party.nameOrNull() &&
@@ -64,7 +63,7 @@ class InvoiceFlowTest {
 
             // This starts three nodes simultaneously with startNode, which returns a future that completes when the node
             // has completed startup. Then these are all resolved with getOrThrow which returns the NodeHandle list.
-            val (notaryHandle, sellerHandle, debtorHandle) = listOf(
+            val (_, sellerHandle, debtorHandle) = listOf(
                     startNode(providedName = DUMMY_NOTARY.name, advertisedServices = setOf(ServiceInfo(SimpleNotaryService.type))),
                     startNode(providedName = SELLER.name, rpcUsers = listOf(sellerUser)),
                     startNode(providedName = DEBTOR.name, rpcUsers = listOf(debtorUser))
@@ -78,12 +77,12 @@ class InvoiceFlowTest {
             val sellerVault = sellerClient.vaultTrackBy<InvoiceState>().updates
             val debtorVault = debtorClient.vaultTrackBy<InvoiceState>().updates
 
-            sellerClient.startFlow(::GenerateInvoiceFlow, "1234", 100, Instant.parse("2018-03-01T00:00:00.000Z"), DEBTOR.name.toString()).returnValue.getOrThrow()
+            sellerClient.startFlow(::GenerateInvoiceFlow, "1234", 100, Instant.parse("2018-03-01T00:00:00.000Z"), DEBTOR.name).returnValue.getOrThrow()
             debtorClient.startFlow(::VerifyInvoiceFlow, "1234")
 
             val expectedEvents =                         listOf(
                     expect { update: Vault.Update<InvoiceState> ->
-                        require(update.consumed.size == 0) { "Should not consume any inputs"}
+                        require(update.consumed.isEmpty()) { "Should not consume any inputs"}
                         require(update.produced.size == 1) { "Should produce one thingy" }
                         require(Companion.areTheSameInvoice(update.produced.single().state.data, expectedInitialState)) { "Should have the correct state" }
                     },
